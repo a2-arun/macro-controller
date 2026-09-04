@@ -79,7 +79,7 @@ def migrate_legacy_data() -> list[str]:
         return []
 
     migrated: list[str] = []
-    for name in ("macros.json", "credentials.enc", "salt.bin", "vault.json"):
+    for name in ("macros.json", "vault.json"):
         source = legacy / name
         target = destination / name
         if source.is_file() and not target.exists():

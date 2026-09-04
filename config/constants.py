@@ -16,12 +16,8 @@ def macros_file() -> Path:
     return data_dir() / "macros.json"
 
 
-def credentials_file() -> Path:
-    return data_dir() / "credentials.enc"
-
-
-def salt_file() -> Path:
-    return data_dir() / "salt.bin"
+def vault_file() -> Path:
+    return data_dir() / "vault.json"
 
 
 def manifest_signature_file() -> Path:

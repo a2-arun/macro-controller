@@ -11,7 +11,89 @@ from __future__ import annotations
 import tkinter as tk
 from tkinter import messagebox, simpledialog, ttk
 
+from config.settings import MIN_PASSPHRASE_LENGTH
+
 URL_PREFIXES = ("http://", "https://", "www.")
+
+
+class PassphraseDialog(simpledialog.Dialog):
+    """Prompt for the vault's master passphrase.
+
+    first_run=True asks the user to choose a new passphrase (with
+    confirmation); first_run=False asks for the existing one. Cancel is
+    relabelled "Skip" -- declining leaves self.result as None, which the
+    caller treats as "run this session without the vault" rather than an
+    error.
+    """
+
+    def __init__(self, parent, *, first_run: bool):
+        self.first_run = first_run
+        self.result = None
+        title = "Choose a Vault Passphrase" if first_run else "Unlock Credential Vault"
+        super().__init__(parent, title)
+
+    def body(self, master):
+        if self.first_run:
+            message = (
+                "Choose a passphrase to protect stored credentials.\n"
+                "It is never written to disk -- if you forget it, stored\n"
+                "credentials cannot be recovered."
+            )
+        else:
+            message = "Enter your vault passphrase, or Skip to run without stored credentials."
+
+        ttk.Label(master, text=message, justify="left").grid(
+            row=0, column=0, columnspan=2, padx=8, pady=(8, 12), sticky="w"
+        )
+
+        ttk.Label(master, text="Passphrase").grid(row=1, column=0, padx=8, sticky="w")
+        self.entry = ttk.Entry(master, width=32, show="•")
+        self.entry.grid(row=1, column=1, padx=8, pady=3)
+
+        self.confirm_entry = None
+        if self.first_run:
+            ttk.Label(master, text="Confirm").grid(row=2, column=0, padx=8, sticky="w")
+            self.confirm_entry = ttk.Entry(master, width=32, show="•")
+            self.confirm_entry.grid(row=2, column=1, padx=8, pady=3)
+
+        return self.entry
+
+    def buttonbox(self):
+        box = ttk.Frame(self)
+        ttk.Button(box, text="OK", command=self.ok, default=tk.ACTIVE).pack(
+            side=tk.LEFT, padx=5, pady=8
+        )
+        ttk.Button(box, text="Skip", command=self.cancel).pack(side=tk.LEFT, padx=5, pady=8)
+        self.bind("<Return>", lambda _event: self.ok())
+        self.bind("<Escape>", lambda _event: self.cancel())
+        box.pack()
+
+    def validate(self) -> bool:
+        passphrase = self.entry.get()
+
+        if self.first_run:
+            if len(passphrase) < MIN_PASSPHRASE_LENGTH:
+                messagebox.showwarning(
+                    "Passphrase too short",
+                    f"Use at least {MIN_PASSPHRASE_LENGTH} characters.",
+                    parent=self,
+                )
+                return False
+            if passphrase != self.confirm_entry.get():
+                messagebox.showwarning(
+                    "Passphrases don't match", "Try again.", parent=self
+                )
+                return False
+        elif not passphrase:
+            messagebox.showwarning(
+                "Passphrase required", "Enter your passphrase, or Skip.", parent=self
+            )
+            return False
+
+        return True
+
+    def apply(self):
+        self.result = self.entry.get()
 
 
 class CustomDialog(simpledialog.Dialog):

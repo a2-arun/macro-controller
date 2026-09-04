@@ -22,11 +22,15 @@ from config.constants import COLORS
 from config.paths import data_dir, migrate_legacy_data
 from config.settings import GLOBAL_HOTKEY
 from core.action_handler import ActionHandler
-from core.credential_manager import CredentialManager
+from core.credential_manager import (
+    CredentialManager,
+    VaultTampered,
+    WrongPassphrase,
+)
 from core.dispatcher import MacroDispatcher
 from core.hotkey_manager import HotkeyManager
 from core.macro_manager import MacroManager, MacroStorageError
-from ui.dialogs import AddActionDialog, CustomDialog
+from ui.dialogs import AddActionDialog, CustomDialog, PassphraseDialog
 
 logger = logging.getLogger(__name__)
 
@@ -39,7 +43,9 @@ class MacroControllerApp:
         if migrated:
             logger.info("migrated legacy data: %s", ", ".join(migrated))
 
-        self.credential_manager = CredentialManager()
+        self.root.withdraw()  # no flash of the empty main window behind the prompt
+        self.credential_manager = self._unlock_vault()
+        self.root.deiconify()
 
         self.macro_manager = MacroManager()
         self.action_handler = ActionHandler(
@@ -65,6 +71,41 @@ class MacroControllerApp:
             )
 
         self.root.protocol("WM_DELETE_WINDOW", self.shutdown)
+
+    # -------------------------------------------------------------- vault unlock
+
+    def _unlock_vault(self) -> CredentialManager:
+        """Prompt for the vault passphrase before the main window appears.
+
+        Runs synchronously on the main thread, before create_gui(). Macro
+        execution can happen on a background dispatcher thread later
+        (see _post()), so the vault must already be open or explicitly
+        skipped by the time any macro could possibly run.
+        """
+        first_run = not CredentialManager.vault_exists()
+        while True:
+            dialog = PassphraseDialog(self.root, first_run=first_run)
+            if dialog.result is None:
+                return CredentialManager(None)
+
+            try:
+                return CredentialManager(dialog.result)
+            except WrongPassphrase:
+                messagebox.showerror(
+                    "Macro Controller", "Wrong passphrase. Try again.", parent=self.root
+                )
+                first_run = False
+            except VaultTampered as exc:
+                logger.error("vault failed integrity verification: %s", exc)
+                if messagebox.askyesno(
+                    "Macro Controller",
+                    "The credential vault could not be verified and may be "
+                    f"corrupted or tampered with:\n\n{exc}\n\n"
+                    "Continue without the vault?",
+                    parent=self.root,
+                ):
+                    return CredentialManager(None)
+                # else: loop and let the user retry after inspecting the file
 
     # ---------------------------------------------------------- thread marshalling
 

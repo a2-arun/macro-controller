@@ -9,11 +9,13 @@ applications, sign in to sites automatically.
 Under active modernisation. See [`docs/ROADMAP.md`](docs/ROADMAP.md) for the
 audit, the engineering plan, and the research direction.
 
-**Security notice.** The credential vault is currently *not* secure: the key
-derivation input is a constant committed to this repository, so anyone with a
-copy of the data directory can decrypt it. This is a known, documented defect
-being addressed in Phase 2. Do not store a credential here that you would mind
-disclosing.
+**Credential vault.** Stored credentials are protected by a passphrase you
+choose on first run — it is never written to disk, so if you forget it,
+stored credentials cannot be recovered. Each credential is bound
+cryptographically to the site it was stored for (AES-256-GCM with the
+origin as associated data), so it cannot be decrypted for any other site.
+The action manifest (`macros.json`) is not yet signed — see
+[`docs/ROADMAP.md`](docs/ROADMAP.md) (item 2.4) for that remaining gap.
 
 ## Requirements
 
@@ -31,6 +33,11 @@ python main.py
 
 ## Using it
 
+On first launch, choose a passphrase for the credential vault (or click
+**Skip** if you won't be storing any sign-in credentials — you'll be asked
+again next launch). This passphrase is never written to disk; if you forget
+it, stored credentials cannot be recovered.
+
 1. Click **Add New Macro** and choose a single key to bind.
 2. Add one or more actions — a URL (`https://github.com`), an application
    (`notepad`), or a Windows protocol handler (`ms-teams`).
@@ -44,8 +51,9 @@ your keyboard captured. <kbd>Esc</kbd> always cancels.
 ## Where your data lives
 
 `%APPDATA%\CustomMacro\` — macros, the credential vault, and logs. The path is
-shown at the bottom of the main window. A legacy `./data` directory is migrated
-automatically on first run (copied, not moved).
+shown at the bottom of the main window, next to an "Open Log Folder" button.
+A legacy `./data` directory is migrated automatically on first run (copied,
+not moved).
 
 ## Development
 
@@ -68,7 +76,7 @@ config/settings.py           hotkey, KDF parameters, timeouts
 core/dispatcher.py           key capture -> macro resolution -> execution
 core/hotkey_manager.py       global toggle hotkey registration
 core/macro_manager.py        atomic macro persistence
-core/credential_manager.py   credential vault (see security notice)
+core/credential_manager.py   credential vault (Argon2id + envelope encryption)
 core/action_handler.py       action execution, no shell interpreter
 automation/web_automation.py Selenium autofill with origin verification
 ui/                          Tkinter interface

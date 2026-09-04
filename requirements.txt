@@ -1,4 +1,9 @@
-cryptography
-pynput
-selenium
-tk
+cryptography>=42.0,<46.0
+pynput>=1.7,<2.0
+selenium>=4.15,<5.0
+
+# Phase 2 (origin-bound vault)
+# argon2-cffi>=23.1,<24.0
+
+# Build
+# pyinstaller>=6.0

@@ -1,0 +1,12 @@
+# Normalise line endings so a Windows checkout does not show every file as
+# modified when the repo is read from another platform.
+* text=auto eol=lf
+
+*.bat text eol=crlf
+*.ps1 text eol=crlf
+
+*.png binary
+*.ico binary
+*.enc binary
+*.bin binary
+*.sig binary

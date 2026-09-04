@@ -14,6 +14,7 @@ _post(), which marshals onto the Tk main loop with after().
 from __future__ import annotations
 
 import logging
+import os
 import tkinter as tk
 from tkinter import messagebox, ttk
 
@@ -255,9 +256,24 @@ class MacroControllerApp:
         self.macro_list.pack(fill=tk.BOTH, expand=True)
         self.macro_list.bind("<Double-1>", lambda _e: self.run_selected_macro())
 
+        diagnostics_row = ttk.Frame(container)
+        diagnostics_row.pack(anchor="w", fill=tk.X, pady=(10, 0))
         ttk.Label(
-            container, text=f"Data: {data_dir()}", foreground="#888"
-        ).pack(anchor="w", pady=(10, 0))
+            diagnostics_row, text=f"Data: {data_dir()}", foreground="#888"
+        ).pack(side=tk.LEFT)
+        ttk.Button(
+            diagnostics_row,
+            text="Open Log Folder",
+            command=self._open_data_dir,
+        ).pack(side=tk.LEFT, padx=(10, 0))
+
+    def _open_data_dir(self) -> None:
+        """Open the app data/log directory in Explorer, for diagnostics."""
+        try:
+            os.startfile(data_dir())  # noqa: S606 -- user-initiated, not attacker input
+        except OSError:
+            logger.exception("could not open data directory")
+            self._show_error(f"Could not open {data_dir()}")
 
     # ------------------------------------------------------------------ lifecycle
 

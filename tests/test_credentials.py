@@ -2,8 +2,8 @@
 
 The canonicalisation tests below are the ones that matter. The vault binds
 the canonical origin as AEAD associated data, so a bug in canonical_origin
-becomes a bug in the cryptographic guarantee itself. These cases are the
-lookalike corpus described in docs/ROADMAP.md Part 3.
+becomes a bug in the cryptographic guarantee itself. These cases are a
+lookalike-domain corpus.
 """
 
 from __future__ import annotations

@@ -6,16 +6,14 @@ applications, sign in to sites automatically.
 
 ## Status
 
-Under active modernisation. See [`docs/ROADMAP.md`](docs/ROADMAP.md) for the
-audit, the engineering plan, and the research direction.
+Under active development.
 
 **Credential vault.** Stored credentials are protected by a passphrase you
 choose on first run — it is never written to disk, so if you forget it,
 stored credentials cannot be recovered. Each credential is bound
 cryptographically to the site it was stored for (AES-256-GCM with the
 origin as associated data), so it cannot be decrypted for any other site.
-The action manifest (`macros.json`) is not yet signed — see
-[`docs/ROADMAP.md`](docs/ROADMAP.md) (item 2.4) for that remaining gap.
+The action manifest (`macros.json`) is not yet signed or authenticated.
 
 ## Requirements
 

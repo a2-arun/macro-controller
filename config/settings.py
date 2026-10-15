@@ -8,8 +8,7 @@ ARM_TIMEOUT_SECONDS = 5.0
 
 # Argon2id parameters for deriving the vault's key-encryption key (KEK) from
 # the user's passphrase. Named constants (not inlined) because they're a
-# tuning knob: docs/ROADMAP.md Part 3 Contribution 3 wants an unlock-latency
-# vs. memory sweep as part of the eventual evaluation.
+# tuning knob: unlock latency trades off against memory cost.
 ARGON2_TIME_COST = 3
 ARGON2_MEMORY_COST_KIB = 65536  # 64 MiB
 ARGON2_PARALLELISM = 4

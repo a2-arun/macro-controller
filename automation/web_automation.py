@@ -14,8 +14,7 @@ macros.json, or DNS interference sent the credential to an attacker.
 The origin check below is a *policy* check -- a branch, which is better than
 nothing but can be bypassed by anyone who can edit this file. Phase 2 replaces
 it with a cryptographic guarantee: the origin becomes AEAD associated data, so
-a record for one origin cannot be decrypted for another. See docs/ROADMAP.md
-Part 3.
+a record for one origin cannot be decrypted for another.
 """
 
 from __future__ import annotations

@@ -6,8 +6,8 @@ process running as the user could append an action and get arbitrary command
 execution the next time a macro fired -- the vault was encrypted, but the
 thing deciding *what code runs* was not protected at all.
 
-Phase 1 removes shell=True and splits arguments properly. Phase 2 adds the
-signed manifest that makes the file itself trustworthy. See docs/ROADMAP.md C4.
+This removes shell=True and splits arguments properly. A signed manifest to
+make the file itself trustworthy is not yet implemented.
 """
 
 from __future__ import annotations

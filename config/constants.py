@@ -24,8 +24,8 @@ def manifest_signature_file() -> Path:
     """Detached authentication tag over macros.json.
 
     macros.json decides what code runs, so it needs integrity protection at
-    least as strong as the credential vault's confidentiality. See
-    docs/ROADMAP.md C4.
+    least as strong as the credential vault's confidentiality. Not yet
+    implemented.
     """
     return data_dir() / "macros.sig"
 

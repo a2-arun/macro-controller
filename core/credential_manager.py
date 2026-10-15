@@ -14,8 +14,6 @@ they read it. This replaces it wholesale:
   for https://github.com cannot be decrypted at all when presented with any
   other origin -- origin confusion degrades to a decryption failure, not a
   policy branch that can be bypassed or patched around.
-
-See docs/ROADMAP.md Part 3 for the full design rationale.
 """
 
 from __future__ import annotations

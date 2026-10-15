@@ -2,7 +2,7 @@
 
 # datas is deliberately empty: app state (macros.json, vault.json, logs)
 # resolves at runtime to %APPDATA%\CustomMacro via config/paths.py, so
-# nothing needs to be bundled alongside the executable. See roadmap 1.6.
+# nothing needs to be bundled alongside the executable.
 a = Analysis(
     ['main.py'],
     pathex=[],
